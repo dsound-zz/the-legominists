@@ -46,7 +46,7 @@ def store_chunks(
                 {
                     "page_number": c.page_number,
                     "chunk_index": c.chunk_index,
-                    "token_count": c.token_count,
+                    "token_count_approx": c.token_count_approx,
                 }
                 for c in batch_chunks
             ],

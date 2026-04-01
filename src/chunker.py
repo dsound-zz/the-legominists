@@ -8,7 +8,7 @@ Why overlap? If Gurdjieff starts defining "Triamazikamno" at the end of
 one chunk, the overlap ensures the definition carries into the next chunk too.
 """
 
-import tiktoken
+# Removed tiktoken (Python 3.14 compatibility)
 from dataclasses import dataclass
 
 from src.pdf_parser import PageText
@@ -21,12 +21,8 @@ class Chunk:
     text: str               # the actual text content
     page_number: int        # source page (1-indexed)
     chunk_index: int        # chunk number within the page
-    token_count: int        # tokens in this chunk
-
-
-def _get_encoder():
-    """Get the tokenizer. cl100k_base works for both OpenAI and rough estimates."""
-    return tiktoken.get_encoding("cl100k_base")
+    char_count: int         # characters in this chunk
+    token_count_approx: int # approximated tokens (chars / 4)
 
 
 def chunk_pages(
@@ -35,50 +31,54 @@ def chunk_pages(
     chunk_overlap: int = 100,
 ) -> list[Chunk]:
     """
-    Split pages into overlapping chunks based on token count.
+    Split pages into overlapping chunks based on character count.
+    We approximate tokens as 1 token ≈ 4 characters for better portability.
 
-    Each chunk carries metadata about which page it came from,
-    so we can cite exact page numbers in query results.
+    Each chunk carries metadata about which page it came from.
     """
-    enc = _get_encoder()
     all_chunks: list[Chunk] = []
+    
+    # Conversion: 1 token ≈ 4 characters
+    CHARS_PER_TOKEN = 4
+    char_limit = chunk_size * CHARS_PER_TOKEN
+    char_overlap = chunk_overlap * CHARS_PER_TOKEN
 
     for page in pages:
-        tokens = enc.encode(page.text)
+        text = page.text
 
-        if len(tokens) <= chunk_size:
+        if len(text) <= char_limit:
             # Page fits in one chunk — no splitting needed
             all_chunks.append(Chunk(
                 id=f"p{page.page_number}_c0",
-                text=page.text,
+                text=text,
                 page_number=page.page_number,
                 chunk_index=0,
-                token_count=len(tokens),
+                char_count=len(text),
+                token_count_approx=len(text) // CHARS_PER_TOKEN,
             ))
             continue
 
-        # Sliding window over tokens
-        step = chunk_size - chunk_overlap
+        # Sliding window over characters
+        step = char_limit - char_overlap
         chunk_idx = 0
 
-        for start in range(0, len(tokens), step):
-            end = min(start + chunk_size, len(tokens))
-            chunk_tokens = tokens[start:end]
-            chunk_text = enc.decode(chunk_tokens)
+        for start in range(0, len(text), step):
+            end = min(start + char_limit, len(text))
+            chunk_text = text[start:end]
 
             all_chunks.append(Chunk(
                 id=f"p{page.page_number}_c{chunk_idx}",
                 text=chunk_text,
                 page_number=page.page_number,
                 chunk_index=chunk_idx,
-                token_count=len(chunk_tokens),
+                char_count=len(chunk_text),
+                token_count_approx=len(chunk_text) // CHARS_PER_TOKEN,
             ))
             chunk_idx += 1
 
             # If we've reached the end, stop
-            if end == len(tokens):
+            if end == len(text):
                 break
 
-    total_tokens = sum(c.token_count for c in all_chunks)
-    print(f"Created {len(all_chunks)} chunks ({total_tokens:,} total tokens)")
+    print(f"Created {len(all_chunks)} chunks for {len(pages)} pages.")
     return all_chunks
