@@ -29,10 +29,13 @@ from src.frequency import load_frequency
 app = FastAPI(title="Beelzebub Explorer API")
 
 # Enable CORS for Vite frontend (local and production)
+frontend_url = os.environ.get("FRONTEND_URL", "").rstrip("/")
 origins = [
     "http://localhost:5173",
-    os.environ.get("FRONTEND_URL", ""),
+    "http://localhost:3000",
 ]
+if frontend_url:
+    origins.append(frontend_url)
 
 app.add_middleware(
     CORSMiddleware,
