@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -16,7 +16,7 @@ const WordHeatmap: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('/api/heatmap')
+    api.get('/api/heatmap')
       .then(res => {
         setData(res.data);
         setLoading(false);

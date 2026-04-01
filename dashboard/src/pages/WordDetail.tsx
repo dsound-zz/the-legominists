@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import { ArrowLeft, BookOpen, Clock, Globe, Info, MessageSquare, Search } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { cn } from '../lib/utils';
@@ -36,7 +36,7 @@ const WordDetail: React.FC = () => {
   useEffect(() => {
     if (word) {
       setLoading(true);
-      axios.get(`/api/word/${word}`)
+      api.get(`/api/word/${word}`)
         .then(res => {
           setData(res.data);
           setLoading(false);

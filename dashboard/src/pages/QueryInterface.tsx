@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import { useLocation } from 'react-router-dom';
 import { Send, Loader2, BookOpen, Quote, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,7 +34,7 @@ const QueryInterface: React.FC = () => {
     if (!q.trim()) return;
     setLoading(true);
     try {
-      const res = await axios.post('/api/query', { question: q });
+      const res = await api.post('/api/query', { question: q });
       setResponse(res.data);
     } catch (err) {
       console.error("Query failed:", err);

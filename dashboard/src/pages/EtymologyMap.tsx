@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Globe, Info, Languages } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const EtymologyMap: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/api/lexicon')
+    api.get('/api/lexicon')
       .then(res => {
         const counts: Record<string, number> = {};
         res.data.forEach((w: any) => {

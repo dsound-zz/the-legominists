@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -30,7 +30,7 @@ const LexiconList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('/api/lexicon')
+    api.get('/api/lexicon')
       .then(res => {
         setWords(res.data);
         setLoading(false);
