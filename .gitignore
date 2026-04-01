@@ -3,8 +3,7 @@ __pycache__/
 *.pyc
 .env
 .env.example
-config/.env
-data/
-db/
+server/config/.env
 .DS_Store
 node_modules
+G.I.Gurdjieff-ALL-and-Everything-Beelzebubs-Tales-To-His-Grandson-facsimile-1950-First-EditionG.I.Gurdjieff-ALL-and-Everything-Beelzebubs-Tales-To-His-Grandson-facsimile-1950-First-Edition.pdf

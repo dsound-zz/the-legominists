@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
 
-# Add project root to path for imports
-ROOT_DIR = Path(__file__).parent.parent
+# Add current directory to path for imports
+ROOT_DIR = Path(__file__).parent
 sys.path.insert(0, str(ROOT_DIR))
 
 # Load environment variables
@@ -28,10 +28,15 @@ from src.frequency import load_frequency
 
 app = FastAPI(title="Beelzebub Explorer API")
 
-# Enable CORS for Vite frontend
+# Enable CORS for Vite frontend (local and production)
+origins = [
+    "http://localhost:5173",
+    os.environ.get("FRONTEND_URL", ""),
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
