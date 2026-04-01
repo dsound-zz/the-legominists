@@ -1,0 +1,25 @@
+{
+  "name": "the-legominist",
+  "version": "1.0.0",
+  "description": "A RAG pipeline for deep analysis of Gurdjieff's *Beelzebub's Tales to His Grandson*.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n \"server,client\" -c \"bgBlue.bold,bgGreen.bold\" \"./venv/bin/python server/main.py\" \"cd dashboard && npm run dev\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsound-zz/the-legominists.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dsound-zz/the-legominists/issues"
+  },
+  "homepage": "https://github.com/dsound-zz/the-legominists#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

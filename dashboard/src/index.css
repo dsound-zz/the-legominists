@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-gold: #ffbf00;
+  --color-brand-gold-muted: #d49f00;
+  --color-bg-deep: #0a0a0c;
+  --color-bg-card: #16161a;
+  
+  --font-mono: "Fira Code", monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-deep text-slate-200 antialiased;
+  }
+}
+
+.scholar-card {
+  @apply bg-bg-card border border-white/5 rounded-lg p-4 shadow-xl;
+}
+
+.neologism {
+  @apply font-mono text-brand-gold;
+}
