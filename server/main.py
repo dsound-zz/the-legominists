@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict
 from dotenv import load_dotenv
 
 # Add current directory to path for imports
@@ -9,7 +9,7 @@ ROOT_DIR = Path(__file__).parent
 sys.path.insert(0, str(ROOT_DIR))
 
 # Load environment variables
-load_dotenv(ROOT_DIR / "config" / ".env")
+load_dotenv(ROOT_DIR / ".env")
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,10 +18,10 @@ from pydantic import BaseModel
 # Settings & Existing Modules
 from config.settings import (
     DB_DIR, COLLECTION_NAME, CONTEXT_CHUNKS,
-    LLM_MODEL, LLM_MAX_TOKENS, DATA_DIR
+    LLM_MODEL, LLM_MAX_TOKENS,
 )
 from src.retriever import get_collection, query_similar
-from src.llm import ask_with_context, genai
+from src.llm import ask_with_context
 from src.lexicon import load_lexicon
 from src.etymology import load_etymology
 from src.definitions import load_definitions
@@ -62,15 +62,19 @@ class QueryResponse(BaseModel):
 _lexicon_cache = None
 _etymology_cache = None
 _frequency_cache = None
+_definitions_cache = None
 
 def get_data():
-    global _lexicon_cache, _etymology_cache, _frequency_cache
+    global _lexicon_cache, _etymology_cache, _frequency_cache, _definitions_cache
     if _lexicon_cache is None:
         _lexicon_cache = load_lexicon()
     if _etymology_cache is None:
         _etymology_cache = load_etymology()
     if _frequency_cache is None:
         _frequency_cache = load_frequency()
+    if _definitions_cache is None:
+        defs_list = load_definitions()
+        _definitions_cache = {d["word"].lower(): d for d in defs_list}
     return _lexicon_cache, _etymology_cache, _frequency_cache
 
 # --- Endpoints ---
@@ -106,24 +110,25 @@ async def get_lexicon():
 @app.get("/api/word/{word}")
 async def get_word_detail(word: str):
     lexicon, etymology, frequency = get_data()
-    
+
     # Find etymology
     ety_item = next((item for item in etymology if item["word"].lower() == word.lower()), None)
     if not ety_item:
-        # Check frequency if not in etymology (e.g. capitalized differently)
         actual_word = next((w for w in frequency.keys() if w.lower() == word.lower()), word)
     else:
         actual_word = ety_item["word"]
-        
+
     freq_data = frequency.get(actual_word, [])
-    
+    definition = _definitions_cache.get(actual_word.lower()) if _definitions_cache else None
+
     # Get top 5 passages from ChromaDB
     collection = get_collection(DB_DIR, COLLECTION_NAME)
     hits = query_similar(collection, actual_word, n_results=5)
-    
+
     return {
         "word": actual_word,
         "etymology": ety_item,
+        "definition": definition,
         "frequency": freq_data,
         "passages": hits,
         "total_count": sum(p["count"] for p in freq_data)
