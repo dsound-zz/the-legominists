@@ -56,7 +56,8 @@ def analyze_etymology_batch(words: List[str], model_name: str = LLM_MODEL) -> Li
     
     prompt = f"""
     Analyze ONLY the linguistic roots and morphemes of the following words from Gurdjieff's writings.
-    Consider Greek, Armenian, Arabic, Turkish, Persian, and Sanskrit as likely sources. 
+    Consider Greek, Armenian, Arabic, Turkish, Persian, Sanskrit, and Russian as likely sources.
+    Gurdjieff was Armenian and grew up speaking Russian, so both languages appear naturally in his coinages.
     
     CRITICAL: Do NOT describe the character, concept, or role this word represents in the book. 
     Focus strictly on the word's construction and likely origin of its parts.

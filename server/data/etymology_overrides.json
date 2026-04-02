@@ -1,1 +1,68 @@
-[]
+[
+    {
+        "word": "Kundabuffer",
+        "roots": [
+            {
+                "morpheme": "Kunda-",
+                "language": "Sanskrit",
+                "meaning": "pit, pot, bowl, spring, coil, circular vessel (kunda)"
+            },
+            {
+                "morpheme": "buffer",
+                "language": "English",
+                "meaning": "a cushion or absorber; something that deadens impact between two forces"
+            }
+        ],
+        "confidence": "medium",
+        "notes": "The 'Kunda-' root is clearly from Sanskrit 'kunda', commonly associated with coiled energy or ritual vessels. While '-buffer' phonetically resembles the English word, adhering to the specified languages, a plausible Sanskrit root is 'bhara' (bearing, support, protection), suggesting a 'coil-support' or 'coil-protector'."
+    },
+    {
+        "word": "Occasion",
+        "roots": [
+            {
+                "morpheme": "ob-",
+                "language": "Latin",
+                "meaning": "against, toward"
+            },
+            {
+                "morpheme": "cadere",
+                "language": "Latin",
+                "meaning": "to fall"
+            }
+        ],
+        "confidence": "high",
+        "notes": "Standard Latin-derived English word, from 'occasio' (a falling together, opportunity). Gurdjieff uses it in its ordinary English sense — notable that it appears frequently enough to register as a neologism, likely because he gives it a precise technical weight in context."
+    },
+    {
+        "word": "Being-Partkdolgduties",
+        "roots": [
+            {
+                "morpheme": "Being-",
+                "language": "English",
+                "meaning": "existence, the state of being"
+            },
+            {
+                "morpheme": "Part-",
+                "language": "Armenian",
+                "meaning": "debt, obligation (Պարտ, part)"
+            },
+            {
+                "morpheme": "-k-",
+                "language": "Phonetic",
+                "meaning": "connective sound artifact from combining Armenian and Russian roots"
+            },
+            {
+                "morpheme": "-dolg",
+                "language": "Russian",
+                "meaning": "debt, obligation, duty (долг)"
+            },
+            {
+                "morpheme": "-duties",
+                "language": "English",
+                "meaning": "moral or legal obligations"
+            }
+        ],
+        "confidence": "high",
+        "notes": "The compound layers the same concept — obligation/debt — in three languages simultaneously: Armenian 'part' (Պարտ), Russian 'dolg' (долг), and English 'duties'. The triple redundancy appears intentional: Gurdjieff is asserting that this quality of being is a universal imperative, not tied to any single cultural or linguistic frame. The '-k-' connector is likely a phonetic artifact of joining the Armenian and Russian morphemes rather than a meaningful morpheme in its own right."
+    }
+]
