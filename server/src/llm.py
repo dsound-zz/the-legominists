@@ -1,12 +1,11 @@
 """
 LLM: Sends retrieved chunks + your question to Gemini for a grounded answer.
-
-This is the "mixing console" — it takes retrieved passages and your question,
-then Gemini produces the final response anchored in the context.
 """
 
 import os
-import google.generativeai as genai
+import time
+from google import genai
+from google.genai import types
 
 
 def ask_with_context(
@@ -15,14 +14,8 @@ def ask_with_context(
     model_name: str = "gemini-2.0-flash",
     max_tokens: int = 1024,
 ) -> str:
-    """
-    Send a question to Gemini along with retrieved context chunks.
-    Each chunk includes its page number for citation.
-    """
-    # Configure API key
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
-    # Format context with page numbers for citation
     context_parts = []
     for i, chunk in enumerate(context_chunks, 1):
         context_parts.append(
@@ -30,9 +23,9 @@ def ask_with_context(
         )
     context_block = "\n\n---\n\n".join(context_parts)
 
-    system_prompt = """You are a scholarly assistant helping analyze Gurdjieff's 
-"Beelzebub's Tales to His Grandson." You have been given relevant passages 
-from the book. 
+    system_prompt = """You are a scholarly assistant helping analyze Gurdjieff's
+"Beelzebub's Tales to His Grandson." You have been given relevant passages
+from the book.
 
 Rules:
 - Answer based ONLY on the provided passages
@@ -49,24 +42,17 @@ Rules:
 
 Question: {question}"""
 
-    # Initialize Gemini model
-    model = genai.GenerativeModel(
-        model_name=model_name,
-        system_instruction=system_prompt,
-    )
-
-    import time
     print(f"[llm] calling {model_name} with {len(context_chunks)} chunks", flush=True)
     t0 = time.time()
 
-    # Generate response (45s HTTP timeout so the thread doesn't outlive the server timeout)
-    response = model.generate_content(
-        user_message,
-        generation_config=genai.types.GenerationConfig(
+    response = client.models.generate_content(
+        model=model_name,
+        contents=user_message,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
             max_output_tokens=max_tokens,
         ),
-        request_options={"timeout": 45},
     )
-    print(f"[llm] response received in {time.time() - t0:.1f}s", flush=True)
 
+    print(f"[llm] response received in {time.time() - t0:.1f}s", flush=True)
     return response.text

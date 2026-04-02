@@ -5,7 +5,8 @@ Etymology: Analyzes the roots of Gurdjieff's neologisms.
 import os
 import json
 from typing import List, Dict
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from pathlib import Path
 
 # Add project root to path
@@ -49,22 +50,21 @@ def analyze_etymology_batch(words: List[str], model_name: str = LLM_MODEL) -> Li
     if not words:
         return []
         
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-    model = genai.GenerativeModel(model_name=model_name)
-    
+    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
+
     words_list = "\n".join([f"- {w}" for w in words])
-    
+
     prompt = f"""
     Analyze ONLY the linguistic roots and morphemes of the following words from Gurdjieff's writings.
     Consider Greek, Armenian, Arabic, Turkish, Persian, Sanskrit, and Russian as likely sources.
     Gurdjieff was Armenian and grew up speaking Russian, so both languages appear naturally in his coinages.
-    
-    CRITICAL: Do NOT describe the character, concept, or role this word represents in the book. 
+
+    CRITICAL: Do NOT describe the character, concept, or role this word represents in the book.
     Focus strictly on the word's construction and likely origin of its parts.
-    
+
     WORDS TO ANALYZE:
     {words_list}
-    
+
     Return ONLY a JSON array of objects, one for each word:
     [
       {{
@@ -78,9 +78,9 @@ def analyze_etymology_batch(words: List[str], model_name: str = LLM_MODEL) -> Li
       ...
     ]
     """
-    
+
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(model=model_name, contents=prompt)
         text = _clean_json_response(response.text)
         data = json.loads(text)
         return data if isinstance(data, list) else []
