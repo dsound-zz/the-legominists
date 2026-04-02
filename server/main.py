@@ -18,7 +18,7 @@ from pydantic import BaseModel
 
 # Settings & Existing Modules
 from config.settings import (
-    DB_DIR, COLLECTION_NAME, CONTEXT_CHUNKS,
+    DATA_DIR, DB_DIR, COLLECTION_NAME, CONTEXT_CHUNKS,
     LLM_MODEL, LLM_MAX_TOKENS,
 )
 from src.retriever import get_collection, query_similar
