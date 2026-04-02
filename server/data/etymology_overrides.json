@@ -34,6 +34,33 @@
         "notes": "Standard Latin-derived English word, from 'occasio' (a falling together, opportunity). Gurdjieff uses it in its ordinary English sense — notable that it appears frequently enough to register as a neologism, likely because he gives it a precise technical weight in context."
     },
     {
+        "word": "Partkdolgduty",
+        "roots": [
+            {
+                "morpheme": "Part-",
+                "language": "Armenian",
+                "meaning": "debt, obligation (Պարտ, part)"
+            },
+            {
+                "morpheme": "-k-",
+                "language": "Phonetic",
+                "meaning": "connective sound artifact from joining Armenian and Russian morphemes"
+            },
+            {
+                "morpheme": "-dolg",
+                "language": "Russian",
+                "meaning": "debt, duty, obligation (долг)"
+            },
+            {
+                "morpheme": "-duty",
+                "language": "English",
+                "meaning": "moral or obligatory responsibility"
+            }
+        ],
+        "confidence": "high",
+        "notes": "The word stacks the same concept — obligation/debt — across three languages simultaneously: Armenian 'part' (Պարտ), Russian 'dolg' (долг), and English 'duty'. The triple redundancy is deliberate: Gurdjieff is asserting that this quality of being is a universal imperative not tied to any single cultural or linguistic frame. The '-k-' is a phonetic connector joining the Armenian and Russian roots, not a meaningful morpheme. The superficial resemblance of '-dolg' to Greek 'dolos' (deceit) is phonetic coincidence and produces a meaning — 'duty of deceit' — that directly contradicts how Gurdjieff uses the word: as a sacred, earnest obligation central to conscious development. The Armenian '-utyun' suffix resemblance to '-duty' is similarly coincidental; 'duty' here is simply the English word."
+    },
+    {
         "word": "Being-Partkdolgduties",
         "roots": [
             {
