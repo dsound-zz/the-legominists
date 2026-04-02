@@ -87,9 +87,18 @@ async def get_lexicon():
     # frequency is a dict: word -> list of {page_number, count}
     word_stats = []
     
+    # Load exclusions
+    exclusions_path = DATA_DIR / "lexicon_exclusions.json"
+    exclusions = set()
+    if exclusions_path.exists():
+        with open(exclusions_path) as f:
+            exclusions = {w.lower() for w in json.load(f)}
+
     # Use etymology as the base for unique neologisms
     for item in etymology:
         word = item["word"]
+        if word.lower() in exclusions:
+            continue
         freq_data = frequency.get(word, [])
         total_count = sum(p["count"] for p in freq_data)
         
