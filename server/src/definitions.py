@@ -6,7 +6,8 @@ import os
 import json
 import time
 from typing import List, Dict
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from pathlib import Path
 import sys
 
@@ -20,8 +21,7 @@ from src.retriever import get_collection, query_similar
 
 def generate_definitions_batch(words: List[str], model_name: str = LLM_MODEL) -> List[Dict]:
     """Generate definitions for a batch of words based ONLY on book passages."""
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-    model = genai.GenerativeModel(model_name)
+    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
     
     collection = get_collection(DB_DIR, COLLECTION_NAME)
     
@@ -65,7 +65,13 @@ def generate_definitions_batch(words: List[str], model_name: str = LLM_MODEL) ->
     """
     
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+            ),
+        )
         text = response.text.strip()
         
         # Clean markdown if present

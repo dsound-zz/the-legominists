@@ -4,16 +4,17 @@ LLM: Sends retrieved chunks + your question to Gemini for a grounded answer.
 
 import os
 import time
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 
 def ask_with_context(
     question: str,
     context_chunks: list[dict],
-    model_name: str = "gemini-2.0-flash",
+    model_name: str = "gemini-2.5-flash",
     max_tokens: int = 1024,
 ) -> str:
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
     context_parts = []
     for i, chunk in enumerate(context_chunks, 1):
@@ -41,16 +42,16 @@ Rules:
 
 Question: {question}"""
 
-    model = genai.GenerativeModel(model_name, system_instruction=system_prompt)
-
     print(f"[llm] calling {model_name} with {len(context_chunks)} chunks", flush=True)
     t0 = time.time()
 
-    response = model.generate_content(
-        user_message,
-        generation_config=genai.types.GenerationConfig(
+    response = client.models.generate_content(
+        model=model_name,
+        contents=user_message,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
             max_output_tokens=max_tokens,
-            thinking_config={"thinking_budget": 0},
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
         ),
     )
 

@@ -163,14 +163,20 @@ async def test_llm():
     if not api_key:
         raise HTTPException(status_code=500, detail="GOOGLE_API_KEY not set")
 
-    import google.generativeai as genai
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(LLM_MODEL)
+    from google import genai
+    from google.genai import types
+    client = genai.Client(api_key=api_key)
 
     loop = asyncio.get_running_loop()
     try:
         response = await asyncio.wait_for(
-            loop.run_in_executor(None, lambda: model.generate_content("Say 'ok'")),
+            loop.run_in_executor(None, lambda: client.models.generate_content(
+                model=LLM_MODEL,
+                contents="Say 'ok'",
+                config=types.GenerateContentConfig(
+                    thinking_config=types.ThinkingConfig(thinking_budget=0),
+                ),
+            )),
             timeout=30.0,
         )
         return {"status": "ok", "model": LLM_MODEL, "response": response.text}
