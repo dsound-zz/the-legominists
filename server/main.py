@@ -146,17 +146,22 @@ async def get_word_detail(word: str):
 
 @app.post("/api/query", response_model=QueryResponse)
 async def post_query(request: QueryRequest):
+    import asyncio
     collection = get_collection(DB_DIR, COLLECTION_NAME)
     hits = query_similar(collection, request.question, n_results=CONTEXT_CHUNKS)
 
     if not hits:
         return QueryResponse(answer="No relevant passages found.", citations=[])
 
-    answer = ask_with_context(
-        question=request.question,
-        context_chunks=hits,
-        model_name=LLM_MODEL,
-        max_tokens=LLM_MAX_TOKENS,
+    loop = asyncio.get_event_loop()
+    answer = await loop.run_in_executor(
+        None,
+        lambda: ask_with_context(
+            question=request.question,
+            context_chunks=hits,
+            model_name=LLM_MODEL,
+            max_tokens=LLM_MAX_TOKENS,
+        )
     )
 
     return QueryResponse(answer=answer, citations=hits)

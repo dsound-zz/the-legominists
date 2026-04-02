@@ -19,8 +19,10 @@ const QueryInterface: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<QueryResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (location.state?.initialQuestion) {
@@ -29,17 +31,41 @@ const QueryInterface: React.FC = () => {
     }
   }, [location.state]);
 
+  const cancel = () => {
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+    setLoading(false);
+  };
+
   const handleQuery = async (q: string = question) => {
     if (!q.trim()) return;
+    cancel();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setLoading(true);
+    setError(null);
     try {
-      const res = await api.post('/api/query', { question: q });
+      const res = await api.post('/api/query', { question: q }, {
+        signal: controller.signal,
+        timeout: 90000,
+      });
       setResponse(res.data);
-    } catch (err) {
-      console.error('Query failed:', err);
+    } catch (err: any) {
+      if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
+        console.error('Query failed:', err);
+        setError('The query timed out or failed. Try a shorter question.');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuestion(val);
+    if (!val) cancel();
   };
 
   return (
@@ -61,7 +87,7 @@ const QueryInterface: React.FC = () => {
             style={{ fontSize: '18px', fontWeight: 400, color: '#1a1a1a', padding: '18px 20px' }}
             placeholder="Ask anything about Beelzebub's Tales…"
             value={question}
-            onChange={(e) => setQuestion(e.target.value)}
+            onChange={handleChange}
             onKeyDown={(e) => e.key === 'Enter' && handleQuery()}
           />
           <button
@@ -78,7 +104,14 @@ const QueryInterface: React.FC = () => {
       {/* Results */}
       <div className="w-full max-w-2xl mx-auto flex-1 overflow-y-auto space-y-8 pb-20 px-4">
         <AnimatePresence mode="wait">
-          {loading ? (
+          {error ? (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="rounded-lg p-5"
+              style={{ border: '1px solid #FECDD3', backgroundColor: '#FFF1F2', color: '#881337', fontSize: '17px' }}
+            >
+              {error}
+            </motion.div>
+          ) : loading ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
