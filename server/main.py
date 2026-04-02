@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import traceback
 from pathlib import Path
 from typing import List, Dict
 from dotenv import load_dotenv
@@ -209,6 +210,7 @@ async def post_query(request: QueryRequest):
     except asyncio.TimeoutError:
         return QueryResponse(answer="The query timed out. Try a more specific question.", citations=hits)
     except Exception as e:
+        print(traceback.format_exc(), flush=True)
         raise HTTPException(status_code=500, detail=f"LLM error: {str(e)}")
 
     return QueryResponse(answer=answer, citations=hits)
