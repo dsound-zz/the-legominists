@@ -64,5 +64,27 @@
         ],
         "confidence": "high",
         "notes": "The compound layers the same concept — obligation/debt — in three languages simultaneously: Armenian 'part' (Պարտ), Russian 'dolg' (долг), and English 'duties'. The triple redundancy appears intentional: Gurdjieff is asserting that this quality of being is a universal imperative, not tied to any single cultural or linguistic frame. The '-k-' connector is likely a phonetic artifact of joining the Armenian and Russian morphemes rather than a meaningful morpheme in its own right."
+    },
+    {
+        "word": "Rascooarno",
+        "roots": [
+            {
+                "morpheme": "Ras-",
+                "language": "Russian",
+                "meaning": "apart, asunder, un- (рас-/раз-); prefix of dissolution, separation, or reversal — as in расpad (disintegration), разрушить (to destroy)"
+            },
+            {
+                "morpheme": "-cooar-",
+                "language": "Unknown",
+                "meaning": "likely a phonetic bridge or Gurdjieffian invention; possibly related to Greek khōra (space, void, the receptive ground) but speculative"
+            },
+            {
+                "morpheme": "-no",
+                "language": "Unknown",
+                "meaning": "recurring nominalizing suffix across Gurdjieff's coinages (cf. Okidanokh, Gornahoor); possibly Armenian in origin"
+            }
+        ],
+        "confidence": "medium",
+        "notes": "Almost certainly built on the Russian prefix рас- (ras-) meaning asunder, dissolution, separation — semantically precise for a process Gurdjieff describes as the sacred coming-apart of a being's higher and lower parts at death. The constraint against Slavic languages in the original analysis obscured this. Remaining morphemes are likely Gurdjieffian invention or heavily obscured. Confidence on the Ras- prefix: high."
     }
 ]
