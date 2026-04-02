@@ -95,13 +95,23 @@ async def get_lexicon():
         
         # Primary root (first one in list)
         primary_lang = "Unknown"
+        languages = []
+        _noise = {"unknown", "unclear", "phonetic", "composite", "connective/euphonic", "various/uncertain"}
         if item.get("roots"):
             primary_lang = item["roots"][0].get("language", "Unknown")
-            
+            seen = set()
+            for root in item["roots"]:
+                for lang in root.get("language", "").split("/"):
+                    lang = lang.strip()
+                    if lang.lower() not in _noise and lang not in seen:
+                        seen.add(lang)
+                        languages.append(lang)
+
         word_stats.append({
             "word": word,
             "count": total_count,
             "primary_language": primary_lang,
+            "languages": languages,
             "pages": len(freq_data)
         })
         

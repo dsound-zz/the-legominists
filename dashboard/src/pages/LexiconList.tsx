@@ -7,6 +7,7 @@ interface WordStat {
   word: string;
   count: number;
   primary_language: string;
+  languages: string[];
   pages: number;
 }
 
@@ -19,6 +20,7 @@ const languageColors: Record<string, { bg: string; text: string; border: string 
   Latin:    { bg: '#F5F3FF', text: '#4C1D95', border: '#DDD6FE' },
   Turkish:  { bg: '#FEF9F0', text: '#78350F', border: '#FDE68A' },
   Persian:  { bg: '#F0FDF4', text: '#14532D', border: '#BBF7D0' },
+  Russian:  { bg: '#FFF7ED', text: '#9A3412', border: '#FDBA74' },
   Mixed:    { bg: '#F9F9F8', text: '#6b7280', border: '#E5E5E5' },
 };
 
@@ -121,7 +123,6 @@ const LexiconList: React.FC = () => {
           </thead>
           <tbody>
             {filteredWords.map((w) => {
-              const colors = languageColors[w.primary_language] || languageColors.Mixed;
               return (
                 <tr
                   key={w.word}
@@ -135,20 +136,28 @@ const LexiconList: React.FC = () => {
                   <td className="px-6 py-4" style={{ color: '#6b7280' }}>{w.count}</td>
                   <td className="px-6 py-4" style={{ color: '#6b7280' }}>{w.pages} pages</td>
                   <td className="px-6 py-4">
-                    <span
-                      className="rounded-full border"
-                      style={{
-                        fontSize: '11px',
-                        padding: '3px 10px',
-                        letterSpacing: '0.06em',
-                        textTransform: 'uppercase',
-                        backgroundColor: colors.bg,
-                        color: colors.text,
-                        borderColor: colors.border,
-                      }}
-                    >
-                      {w.primary_language}
-                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {(w.languages?.length ? w.languages : [w.primary_language]).map((lang) => {
+                        const c = languageColors[lang] || languageColors.Mixed;
+                        return (
+                          <span
+                            key={lang}
+                            className="rounded-full border"
+                            style={{
+                              fontSize: '11px',
+                              padding: '3px 10px',
+                              letterSpacing: '0.06em',
+                              textTransform: 'uppercase',
+                              backgroundColor: c.bg,
+                              color: c.text,
+                              borderColor: c.border,
+                            }}
+                          >
+                            {lang}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <button
