@@ -20,58 +20,67 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen bg-bg-deep overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
       <FriendlyAdviceModal />
+
       {/* Sidebar */}
       <aside
-        className={cn(
-          "bg-bg-card border-r border-white/5 transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "w-64" : "w-20"
-        )}
+        className={cn('flex flex-col transition-all duration-300 ease-in-out', isSidebarOpen ? 'w-72' : 'w-20')}
+        style={{ backgroundColor: '#F9F9F8', borderRight: '1px solid #E5E5E5' }}
       >
-        <div className="flex flex-col h-full">
-          <div className="p-6 flex items-center justify-between">
-            {isSidebarOpen && (
-              <span className="text-xl font-bold tracking-wider text-brand-gold">
-                BEELZEBUB
-              </span>
-            )}
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400"
-            >
-              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
+        <div className="flex items-center justify-between px-5 py-6">
+          {isSidebarOpen && (
+            <span className="font-display" style={{ fontSize: '22px', fontWeight: 400, color: '#1a1a1a' }}>
+              Beelzebub's Tales
+            </span>
+          )}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 rounded"
+            style={{ color: '#6b7280' }}
+          >
+            {isSidebarOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
 
-          <nav className="flex-1 px-4 space-y-2 py-4">
-            {navItems.map((item) => (
+        <nav className="flex-1 px-3 space-y-2 py-2">
+          {navItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={cn(
-                  "flex items-center px-3 py-2.5 rounded-lg transition-colors group",
-                  location.pathname === item.path
-                    ? "bg-brand-gold/10 text-brand-gold"
-                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                )}
+                className="flex items-center px-4 py-3.5 rounded transition-colors"
+                style={{
+                  fontSize: '22px',
+                  fontWeight: 400,
+                  color: active ? '#6B3E1A' : '#6b7280',
+                  backgroundColor: active ? '#F5EDE4' : 'transparent',
+                  borderLeft: active ? '2px solid #6B3E1A' : '2px solid transparent',
+                  gap: '14px',
+                }}
               >
-                <item.icon className="shrink-0" size={20} />
+                <item.icon size={22} className="shrink-0" />
                 {isSidebarOpen && (
-                  <span className="ml-3 font-medium text-sm">{item.name}</span>
+                  <span style={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    {item.name}
+                  </span>
                 )}
               </Link>
-            ))}
-          </nav>
-        </div>
+            );
+          })}
+        </nav>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 border-b border-white/5 flex items-center px-8 bg-bg-deep/50 backdrop-blur-md z-10">
-          <h1 className="text-sm font-medium tracking-[0.2em] text-slate-400 uppercase">
+        <header
+          className="h-14 flex items-center px-8"
+          style={{ borderBottom: '1px solid #E5E5E5', backgroundColor: '#FFFFFF' }}
+        >
+          <span style={{ fontSize: '22px', fontWeight: 400, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
             The Legominist Explorer
-          </h1>
+          </span>
         </header>
 
         <section className="flex-1 overflow-y-auto p-8">
