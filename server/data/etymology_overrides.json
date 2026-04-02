@@ -86,5 +86,27 @@
         ],
         "confidence": "medium",
         "notes": "Almost certainly built on the Russian prefix рас- (ras-) meaning asunder, dissolution, separation — semantically precise for a process Gurdjieff describes as the sacred coming-apart of a being's higher and lower parts at death. The constraint against Slavic languages in the original analysis obscured this. Remaining morphemes are likely Gurdjieffian invention or heavily obscured. Confidence on the Ras- prefix: high."
+    },
+    {
+        "word": "Gornahoor Raoorkh",
+        "roots": [
+            {
+                "morpheme": "Gornahoor",
+                "language": "Composite",
+                "meaning": "honorific title; see Gornahoor entry"
+            },
+            {
+                "morpheme": "Rao-",
+                "language": "Sanskrit / Persian",
+                "meaning": "Sanskrit rāja/rāo (king, ruler); Persian rao (flow, movement); Arabic ra'y (vision, insight) are all possible — none conclusive"
+            },
+            {
+                "morpheme": "-orkh",
+                "language": "Greek",
+                "meaning": "arkhos — chief, ruler, first; the same suffix appearing in Harharkh"
+            }
+        ],
+        "confidence": "low",
+        "notes": "Likely Gurdjieffian coinage. The '-orkh' suffix is the strongest foothold — it mirrors Harharkh and points to Greek arkhos (chief/ruler). 'Rao-' is plausibly Sanskrit or Persian for ruler or flow, which would make Raoorkh something like 'flowing ruler' or 'sovereign heir' — consistent with his role as Harharkh's produced-one. But the honest answer is that Gurdjieff sometimes invented sounds, and not every word deconstructs cleanly. The connection to Harharkh via the shared suffix is probably more meaningful than the Rao- root itself."
     }
 ]
