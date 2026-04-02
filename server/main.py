@@ -153,16 +153,24 @@ async def post_query(request: QueryRequest):
     if not hits:
         return QueryResponse(answer="No relevant passages found.", citations=[])
 
-    loop = asyncio.get_event_loop()
-    answer = await loop.run_in_executor(
-        None,
-        lambda: ask_with_context(
-            question=request.question,
-            context_chunks=hits,
-            model_name=LLM_MODEL,
-            max_tokens=LLM_MAX_TOKENS,
+    loop = asyncio.get_running_loop()
+    try:
+        answer = await asyncio.wait_for(
+            loop.run_in_executor(
+                None,
+                lambda: ask_with_context(
+                    question=request.question,
+                    context_chunks=hits,
+                    model_name=LLM_MODEL,
+                    max_tokens=LLM_MAX_TOKENS,
+                )
+            ),
+            timeout=60.0,
         )
-    )
+    except asyncio.TimeoutError:
+        return QueryResponse(answer="The query timed out. Try a more specific question.", citations=hits)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"LLM error: {str(e)}")
 
     return QueryResponse(answer=answer, citations=hits)
 
