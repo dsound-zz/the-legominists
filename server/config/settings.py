@@ -30,7 +30,7 @@ CHUNK_OVERLAP = 100    # overlapping tokens between chunks
 COLLECTION_NAME = "beelzebub"
 
 # ── LLM (for query answering) ─────────────────────────
-LLM_MODEL = "gemini-2.5-flash"
+LLM_MODEL = "gemini-2.0-flash"
 LLM_MAX_TOKENS = 1024
 CONTEXT_CHUNKS = 5     # how many chunks to retrieve per query
 
