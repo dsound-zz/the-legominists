@@ -4,7 +4,6 @@ Etymology: Analyzes the roots of Gurdjieff's neologisms.
 
 import os
 import json
-import time
 from typing import List, Dict
 import google.generativeai as genai
 from pathlib import Path
@@ -115,9 +114,22 @@ def save_etymology(etymology_map: List[Dict], filename: str = "etymology.json"):
     return out_path
 
 def load_etymology(filename: str = "etymology.json") -> List[Dict]:
-    """Load etymology list from disk."""
+    """Load etymology list from disk, applying any manual overrides."""
     path = DATA_DIR / filename
     if not path.exists():
         return []
     with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+        entries = json.load(f)
+
+    overrides_path = DATA_DIR / "etymology_overrides.json"
+    if overrides_path.exists():
+        with open(overrides_path, "r", encoding="utf-8") as f:
+            overrides = json.load(f)
+        if overrides:
+            override_map = {o["word"].lower(): o for o in overrides}
+            for entry in entries:
+                override = override_map.get(entry["word"].lower())
+                if override:
+                    entry.update({k: v for k, v in override.items() if k != "word"})
+
+    return entries
