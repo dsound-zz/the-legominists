@@ -10,8 +10,14 @@ interface WordDetailData {
   etymology: {
     word: string;
     roots: { morpheme: string; language: string; meaning: string }[];
-    confidence: number;
+    confidence: string | number;
     notes: string;
+  };
+  definition: {
+    word: string;
+    definition: string;
+    role: string;
+    key_quotes: { text: string; page_number: number }[];
   };
   frequency: { page_number: number; count: number }[];
   passages: { text: string; page_number: number; distance: number }[];
@@ -64,9 +70,15 @@ const WordDetail: React.FC = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="space-y-4 flex-1">
-          <h2 className="text-5xl font-mono font-bold text-brand-gold tracking-tight lowercase">
-            {data.word}
-          </h2>
+          <div className="space-y-1">
+            <h2 className="text-5xl font-mono font-bold text-brand-gold tracking-tight lowercase">
+              {data.word}
+            </h2>
+            <p className="text-slate-500 font-mono text-sm uppercase tracking-widest">
+              {data.definition?.role || "Neologism"}
+            </p>
+          </div>
+          
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium text-slate-300">
               <Clock size={14} className="text-slate-500" />
@@ -76,18 +88,7 @@ const WordDetail: React.FC = () => {
               <Globe size={14} className="text-slate-500" />
               {data.frequency.length} unique pages
             </div>
-              {data.etymology?.confidence && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-brand-gold/5 border border-brand-gold/20 rounded-full text-xs font-medium text-brand-gold">
-                  <Info size={14} />
-                  {typeof data.etymology.confidence === 'number' 
-                    ? `${Math.round(data.etymology.confidence * 100)}% Confidence`
-                    : `${data.etymology.confidence} Confidence`}
-                </div>
-              )}
           </div>
-          <p className="text-slate-400 italic text-lg leading-relaxed">
-            {data.etymology?.notes || "A neologism found within Gurdjieff's cosmic hierarchy."}
-          </p>
         </div>
 
         <button
@@ -99,33 +100,46 @@ const WordDetail: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Etymology Column */}
-        <div className="lg:col-span-1 space-y-6">
-          <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-            <Globe size={16} /> Etymological Breakdown
-          </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Main Content: Definition & Context */}
+        <div className="lg:col-span-8 space-y-8">
+          {/* Definition Section */}
           <div className="space-y-4">
-            {data.etymology?.roots?.map((root, i) => (
-              <div key={i} className="scholar-card border-l-2 border-l-brand-gold/30 hover:border-l-brand-gold transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-xl font-mono text-brand-gold">{root.morpheme}</span>
-                  <span className={cn(
-                    "text-[10px] px-2 py-0.5 rounded border uppercase font-bold tracking-wider",
-                    languageColors[root.language] || "border-white/20 text-white/40"
-                  )}>
-                    {root.language}
-                  </span>
-                </div>
-                <div className="text-sm text-slate-300 font-medium">{root.meaning}</div>
-              </div>
-            ))}
-            {!data.etymology?.roots && <div className="text-slate-500 italic">No root breakdown available.</div>}
+            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
+              <BookOpen size={16} /> In the Book
+            </h3>
+            <div className="scholar-card border-l-2 border-l-brand-gold p-6">
+              <p className="text-slate-200 text-lg leading-relaxed">
+                {data.definition?.definition || "Description loading from text analysis..."}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Frequency & Passages Column */}
-        <div className="lg:col-span-2 space-y-8">
+          {/* Quotes Section */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
+              <MessageSquare size={16} /> Key Passages
+            </h3>
+            <div className="space-y-4">
+              {data.definition?.key_quotes?.map((q, i) => (
+                <div key={i} className="scholar-card relative group">
+                  <div className="absolute top-4 right-4 text-[10px] text-slate-500 font-bold uppercase">PAGE {q.page_number}</div>
+                  <blockquote className="text-slate-300 leading-relaxed pr-12 italic">
+                    "{q.text}"
+                  </blockquote>
+                </div>
+              )) || data.passages.map((p, i) => (
+                <div key={i} className="scholar-card relative group">
+                  <div className="absolute top-4 right-4 text-[10px] text-slate-500 font-bold uppercase">PAGE {p.page_number}</div>
+                  <blockquote className="text-slate-300 leading-relaxed pr-12 italic">
+                    "{p.text}"
+                  </blockquote>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Heatmap Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
               <Clock size={16} /> Frequency over Narrative
@@ -150,22 +164,50 @@ const WordDetail: React.FC = () => {
               </ResponsiveContainer>
             </div>
           </div>
+        </div>
 
+        {/* Sidebar: Etymology */}
+        <div className="lg:col-span-4 space-y-6">
+          <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
+            <Globe size={16} /> Linguistic Roots
+          </h3>
           <div className="space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-              <BookOpen size={16} /> Literary Context
-            </h3>
-            <div className="space-y-4">
-              {data.passages.map((p, i) => (
-                <div key={i} className="scholar-card relative group">
-                  <div className="absolute top-4 right-4 text-[10px] text-slate-500 font-bold uppercase">PAGE {p.page_number}</div>
-                  <blockquote className="text-slate-300 leading-relaxed pr-12 italic">
-                    "{p.text}"
-                  </blockquote>
+            {data.etymology?.roots?.map((root, i) => (
+              <div key={i} className="scholar-card border-l-2 border-l-brand-gold/30 hover:border-l-brand-gold transition-colors bg-white/5">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-xl font-mono text-brand-gold">{root.morpheme}</span>
+                  <span className={cn(
+                    "text-[10px] px-2 py-0.5 rounded border uppercase font-bold tracking-wider",
+                    languageColors[root.language] || "border-white/20 text-white/40"
+                  )}>
+                    {root.language}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <div className="text-sm text-slate-300 font-medium">{root.meaning}</div>
+              </div>
+            ))}
+            {data.etymology?.notes && (
+              <p className="text-xs text-slate-500 italic mt-4 p-4 border-t border-white/5">
+                {data.etymology.notes}
+              </p>
+            )}
+            {!data.etymology?.roots && <div className="text-slate-500 italic">No root breakdown available.</div>}
           </div>
+
+          {data.etymology?.confidence && (
+            <div className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-xs font-medium ${
+              data.etymology.confidence === 'high' || (typeof data.etymology.confidence === 'number' && data.etymology.confidence >= 0.8)
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                : data.etymology.confidence === 'low' || (typeof data.etymology.confidence === 'number' && data.etymology.confidence < 0.4)
+                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                : 'bg-brand-gold/10 border-brand-gold/20 text-brand-gold'
+            }`}>
+              <Info size={14} />
+              {typeof data.etymology.confidence === 'number' 
+                ? `${Math.round(data.etymology.confidence * 100)}% Confidence in analysis`
+                : `${data.etymology.confidence.charAt(0).toUpperCase() + data.etymology.confidence.slice(1)} Confidence in analysis`}
+            </div>
+          )}
         </div>
       </div>
     </div>

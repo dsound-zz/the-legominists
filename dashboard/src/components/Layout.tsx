@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Book, Search, Globe, Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
+import FriendlyAdviceModal from './FriendlyAdviceModal';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-bg-deep overflow-hidden">
+      <FriendlyAdviceModal />
       {/* Sidebar */}
       <aside
         className={cn(

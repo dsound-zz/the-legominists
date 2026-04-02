@@ -11,16 +11,17 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
 from rich.panel import Panel
 
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add server directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent / "server"))
 
 from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent.parent / "config" / ".env")
+load_dotenv(Path(__file__).parent.parent / "server" / ".env")
 
 from src.retriever import get_collection
 from src.lexicon import extract_neologisms_from_batch, save_lexicon, load_lexicon
-from src.etymology import analyze_etymology, save_etymology, load_etymology
+from src.etymology import analyze_etymology_batch, save_etymology, load_etymology
 from src.frequency import build_frequency_map, save_frequency
+from src.definitions import generate_definitions_batch, save_definitions, load_definitions
 from config.settings import DB_DIR, COLLECTION_NAME, DATA_DIR
 
 console = Console()
@@ -82,13 +83,17 @@ def run_pipeline(force: bool = False):
 
     # 2. Etymology Analysis
     etymology_file = DATA_DIR / "etymology.json"
+    etymology_errors_file = DATA_DIR / "etymology_errors.json"
+    
     if etymology_file.exists() and not force:
         console.print("[green]✔[/green] Etymology data already exists. Skipping analysis.")
         etymology_data = load_etymology()
     else:
-        console.print("[bold cyan]2. Analyzing Etymologies...[/bold cyan]")
+        console.print("[bold cyan]2. Analyzing Etymologies (Batch)...[/bold cyan]")
         unique_words = sorted([item["word"] for item in lexicon])
         etymology_results = []
+        etymology_errors = []
+        batch_size = 10
         
         with Progress(
             SpinnerColumn(),
@@ -99,22 +104,67 @@ def run_pipeline(force: bool = False):
         ) as progress:
             task = progress.add_task("[magenta]Unpacking roots...", total=len(unique_words))
             
-            for word in unique_words:
-                analysis = analyze_etymology(word)
-                if analysis:
-                    etymology_results.append(analysis)
-                progress.update(task, advance=1)
-                time.sleep(2) # Anti-rate-limit delay
+            for i in range(0, len(unique_words), batch_size):
+                batch = unique_words[i:i + batch_size]
+                batch_results = analyze_etymology_batch(batch)
+                if batch_results:
+                    etymology_results.extend(batch_results)
+                else:
+                    etymology_errors.extend(batch)
+                progress.update(task, advance=len(batch))
+                time.sleep(1.5) # Anti-rate-limit delay between batches
         
         save_etymology(etymology_results)
-        console.print(f"   [dim]→ Analyzed {len(etymology_results)} words.[/dim]")
+        if etymology_errors:
+            with open(etymology_errors_file, "w") as f:
+                json.dump(etymology_errors, f, indent=2)
+        console.print(f"   [dim]→ Analyzed {len(etymology_results)} words. ({len(etymology_errors)} failed)[/dim]")
 
-    # 3. Frequency & Location Mapping
+    # 3. RAG Definitions
+    definitions_file = DATA_DIR / "definitions.json"
+    definition_errors_file = DATA_DIR / "definition_errors.json"
+    
+    if definitions_file.exists() and not force:
+        console.print("[green]✔[/green] Definitions already exist. Skipping.")
+        definitions_data = load_definitions()
+    else:
+        console.print("[bold cyan]3. Generating Definitions (Batch RAG)...[/bold cyan]")
+        unique_words = sorted([item["word"] for item in lexicon])
+        definition_results = []
+        definition_errors = []
+        batch_size = 10
+        
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            console=console
+        ) as progress:
+            task = progress.add_task("[blue]Querying corpus...", total=len(unique_words))
+            
+            for i in range(0, len(unique_words), batch_size):
+                batch = unique_words[i:i + batch_size]
+                batch_results = generate_definitions_batch(batch)
+                if batch_results:
+                    definition_results.extend(batch_results)
+                else:
+                    definition_errors.extend(batch)
+                progress.update(task, advance=len(batch))
+                time.sleep(1.5) # API pacing
+        
+        save_definitions(definition_results)
+        if definition_errors:
+            with open(definition_errors_file, "w") as f:
+                json.dump(definition_errors, f, indent=2)
+        console.print(f"   [dim]→ Defined {len(definition_results)} words. ({len(definition_errors)} failed)[/dim]")
+
+    # 4. Frequency & Location Mapping
     frequency_file = DATA_DIR / "frequency.json"
     if frequency_file.exists() and not force:
         console.print("[green]✔[/green] Frequency map already exists. Skipping.")
     else:
-        console.print("[bold cyan]3. Mapping Frequencies...[/bold cyan]")
+        console.print("[bold cyan]4. Mapping Frequencies...[/bold cyan]")
         unique_words = [item["word"] for item in lexicon]
         
         # Get raw chunks again for counting

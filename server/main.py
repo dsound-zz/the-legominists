@@ -24,6 +24,7 @@ from src.retriever import get_collection, query_similar
 from src.llm import ask_with_context, genai
 from src.lexicon import load_lexicon
 from src.etymology import load_etymology
+from src.definitions import load_definitions
 from src.frequency import load_frequency
 
 app = FastAPI(title="Beelzebub Explorer API")
