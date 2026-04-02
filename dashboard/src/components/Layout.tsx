@@ -20,12 +20,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="flex h-screen overflow-hidden flex-col md:flex-row" style={{ backgroundColor: '#FFFFFF' }}>
       <FriendlyAdviceModal />
 
-      {/* Sidebar */}
+      {/* Desktop Sidebar - Hidden on mobile */}
       <aside
-        className={cn('flex flex-col transition-all duration-300 ease-in-out', isSidebarOpen ? 'w-72' : 'w-20')}
+        className={cn(
+          'hidden md:flex flex-col transition-all duration-300 ease-in-out',
+          isSidebarOpen ? 'w-72' : 'w-20'
+        )}
         style={{ backgroundColor: '#F9F9F8', borderRight: '1px solid #E5E5E5' }}
       >
         <div className="flex items-center justify-between px-5 py-6">
@@ -36,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 rounded"
+            className="p-2 rounded hover:bg-dust transition-colors"
             style={{ color: '#6b7280' }}
           >
             {isSidebarOpen ? <X size={22} /> : <Menu size={22} />}
@@ -73,22 +76,48 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden relative">
         <header
-          className="h-14 flex items-center px-8"
+          className="h-14 flex items-center px-4 md:px-8 shrink-0"
           style={{ borderBottom: '1px solid #E5E5E5', backgroundColor: '#FFFFFF' }}
         >
-          <span style={{ fontSize: '22px', fontWeight: 400, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+          <span className="text-sm md:text-[22px] font-normal text-muted uppercase tracking-[0.12em]">
             The Legominist Explorer
           </span>
         </header>
 
-        <section className="flex-1 overflow-y-auto p-8">
+        <section className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
           {children}
         </section>
+
+        {/* Mobile Bottom Navigation - Hidden on desktop */}
+        <nav 
+          className="md:hidden fixed bottom-0 left-0 right-0 h-16 flex items-around justify-between px-4 z-40 bg-linen border-t border-sandstone shadow-lg"
+        >
+          {navItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="flex flex-col items-center justify-center flex-1 py-1 gap-1"
+                style={{
+                  color: active ? '#6B3E1A' : '#6b7280',
+                }}
+              >
+                <item.icon size={20} className={active ? 'scale-110' : ''} />
+                <span style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: active ? '600' : '400' }}>
+                  {item.name}
+                </span>
+                {active && <div className="w-1 h-1 rounded-full bg-brand-gold mt-0.5" />}
+              </Link>
+            );
+          })}
+        </nav>
       </main>
     </div>
   );
 };
 
 export default Layout;
+

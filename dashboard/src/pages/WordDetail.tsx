@@ -36,8 +36,8 @@ const languageColors: Record<string, { bg: string; text: string; border: string 
 
 const SectionLabel: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
   <h3
-    className="flex items-center gap-2"
-    style={{ fontSize: '17px', fontWeight: 400, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+    className="flex items-center gap-2 text-sm md:text-[17px]"
+    style={{ fontWeight: 400, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}
   >
     {icon} {children}
   </h3>
@@ -64,11 +64,11 @@ const WordDetail: React.FC = () => {
   const quotes = data.definition?.key_quotes?.length ? data.definition.key_quotes : data.passages;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 transition-colors"
-        style={{ fontSize: '17px', color: '#6b7280' }}
+        className="flex items-center gap-2 transition-colors text-sm md:text-[17px]"
+        style={{ color: '#6b7280' }}
         onMouseEnter={(e) => (e.currentTarget.style.color = '#1a1a1a')}
         onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
       >
@@ -77,24 +77,24 @@ const WordDetail: React.FC = () => {
       </button>
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-        <div>
-          <h2 className="text-5xl font-display lowercase" style={{ color: '#6B3E1A' }}>
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
+        <div className="w-full">
+          <h2 className="text-4xl md:text-5xl font-display lowercase" style={{ color: '#6B3E1A' }}>
             {data.word}
           </h2>
-          <p className="mt-1" style={{ fontSize: '17px', fontWeight: 400, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <p className="mt-1 text-sm md:text-[17px]" style={{ fontWeight: 400, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             {data.definition?.role || 'Neologism'}
           </p>
-          <div className="flex gap-3 mt-3">
+          <div className="flex flex-wrap gap-2 md:gap-3 mt-3">
             <span
-              className="rounded"
-              style={{ fontSize: '17px', fontWeight: 400, padding: '4px 10px', backgroundColor: '#F9F9F8', border: '1px solid #E5E5E5', color: '#6b7280' }}
+              className="rounded text-xs md:text-[17px] px-2 py-1 md:px-2.5 md:py-1.5"
+              style={{ fontWeight: 400, backgroundColor: '#F9F9F8', border: '1px solid #E5E5E5', color: '#6b7280' }}
             >
               <Clock size={11} className="inline mr-1" />{data.total_count} occurrences
             </span>
             <span
-              className="rounded"
-              style={{ fontSize: '17px', fontWeight: 400, padding: '4px 10px', backgroundColor: '#F9F9F8', border: '1px solid #E5E5E5', color: '#6b7280' }}
+              className="rounded text-xs md:text-[17px] px-2 py-1 md:px-2.5 md:py-1.5"
+              style={{ fontWeight: 400, backgroundColor: '#F9F9F8', border: '1px solid #E5E5E5', color: '#6b7280' }}
             >
               <Globe size={11} className="inline mr-1" />{data.frequency.length} pages
             </span>
@@ -103,26 +103,26 @@ const WordDetail: React.FC = () => {
 
         <button
           onClick={() => navigate('/query', { state: { initialQuestion: `What is the significance of the word ${data.word}?` } })}
-          className="flex items-center gap-2 px-4 py-2 rounded transition-opacity hover:opacity-80 whitespace-nowrap shrink-0"
-          style={{ fontSize: '17px', fontWeight: 400, backgroundColor: '#6B3E1A', color: '#FFFFFF' }}
+          className="flex items-center justify-center gap-2 px-4 py-2.5 md:py-2 rounded transition-opacity hover:opacity-80 whitespace-nowrap w-full md:w-auto shrink-0 md:mt-0 text-[16px] md:text-[17px]"
+          style={{ fontWeight: 400, backgroundColor: '#6B3E1A', color: '#FFFFFF' }}
         >
           <Search size={17} />
           Ask about this word
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         {/* Main */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-6 md:space-y-8">
 
           {/* Definition */}
           <div className="space-y-3">
             <SectionLabel icon={<BookOpen size={13} />}>Definition</SectionLabel>
             <div
-              className="p-5 rounded-lg"
-              style={{ border: '1px solid #E5E5E5', borderLeftWidth: '2px', borderLeftColor: '#6B3E1A', backgroundColor: '#F9F9F8' }}
+              className="p-4 md:p-5 rounded-lg border-l-[3px]"
+              style={{ border: '1px solid #E5E5E5', borderLeftColor: '#6B3E1A', backgroundColor: '#F9F9F8' }}
             >
-              <p style={{ fontSize: '17px', fontWeight: 400, color: '#1a1a1a', lineHeight: 1.7 }}>
+              <p className="text-base md:text-[17px]" style={{ fontWeight: 400, color: '#1a1a1a', lineHeight: 1.7 }}>
                 {data.definition?.definition || 'Description loading from text analysis...'}
               </p>
             </div>
@@ -134,10 +134,10 @@ const WordDetail: React.FC = () => {
             <div className="space-y-3">
               {quotes?.map((q, i) => (
                 <div key={i} className="relative p-4 rounded-lg" style={{ border: '1px solid #E5E5E5', backgroundColor: '#F9F9F8' }}>
-                  <div style={{ fontSize: '17px', fontWeight: 400, color: '#6b7280', marginBottom: '6px' }}>
+                  <div className="text-xs md:text-[17px]" style={{ fontWeight: 400, color: '#6b7280', marginBottom: '6px' }}>
                     Page {q.page_number}
                   </div>
-                  <blockquote style={{ fontSize: '17px', fontWeight: 400, color: '#1a1a1a', lineHeight: 1.7 }}>
+                  <blockquote className="text-base md:text-[17px]" style={{ fontWeight: 400, color: '#1a1a1a', lineHeight: 1.7 }}>
                     "{q.text}"
                   </blockquote>
                 </div>
@@ -160,7 +160,7 @@ const WordDetail: React.FC = () => {
                   <XAxis dataKey="page_number" hide />
                   <YAxis hide domain={[0, 'dataMax + 1']} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E5E5', color: '#1a1a1a', fontSize: '17px', fontFamily: 'inherit' }}
+                    contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E5E5', color: '#1a1a1a', fontSize: '14px', fontFamily: 'inherit' }}
                     labelFormatter={(label) => `Page ${label}`}
                   />
                   <Area type="monotone" dataKey="count" stroke="#6B3E1A" fillOpacity={1} fill="url(#colorFreq)" strokeWidth={1.5} />
@@ -169,6 +169,7 @@ const WordDetail: React.FC = () => {
             </div>
           </div>
         </div>
+
 
         {/* Sidebar: Etymology */}
         <div className="lg:col-span-4 space-y-4">
@@ -179,12 +180,10 @@ const WordDetail: React.FC = () => {
               return (
                 <div key={i} className="p-4 rounded-lg" style={{ border: '1px solid #E5E5E5', backgroundColor: '#F9F9F8' }}>
                   <div className="flex justify-between items-start mb-1.5">
-                    <span className="font-display" style={{ fontSize: '18px', fontWeight: 400, color: '#6B3E1A' }}>{root.morpheme}</span>
+                    <span className="font-display text-lg md:text-xl" style={{ fontWeight: 400, color: '#6B3E1A' }}>{root.morpheme}</span>
                     <span
-                      className="rounded-full"
+                      className="rounded-full text-[11px] md:text-[13px] px-2 py-0.5 md:px-2 md:py-0.5"
                       style={{
-                        fontSize: '13px',
-                        padding: '2px 8px',
                         letterSpacing: '0.06em',
                         textTransform: 'uppercase',
                         backgroundColor: colors?.bg ?? '#F9F9F8',
@@ -195,25 +194,24 @@ const WordDetail: React.FC = () => {
                       {root.language}
                     </span>
                   </div>
-                  <div style={{ fontSize: '17px', fontWeight: 400, color: '#6b7280' }}>{root.meaning}</div>
+                  <div className="text-sm md:text-[17px]" style={{ fontWeight: 400, color: '#6b7280' }}>{root.meaning}</div>
                 </div>
               );
             })}
             {data.etymology?.notes && (
-              <p style={{ fontSize: '17px', fontWeight: 400, color: '#6b7280', paddingTop: '12px', borderTop: '1px solid #E5E5E5' }}>
+              <p className="text-sm md:text-[17px]" style={{ fontWeight: 400, color: '#6b7280', paddingTop: '12px', borderTop: '1px solid #E5E5E5' }}>
                 {data.etymology.notes}
               </p>
             )}
             {!data.etymology?.roots && (
-              <div style={{ fontSize: '17px', color: '#6b7280' }}>No root breakdown available.</div>
+              <div className="text-sm md:text-[17px]" style={{ color: '#6b7280' }}>No root breakdown available.</div>
             )}
           </div>
 
           {data.etymology?.confidence && (
             <div
-              className="flex items-center gap-2 px-3 py-2 rounded"
+              className="flex items-center gap-2 px-3 py-2 rounded text-sm md:text-[17px]"
               style={{
-                fontSize: '17px',
                 fontWeight: 400,
                 border: '1px solid #E5E5E5',
                 ...(data.etymology.confidence === 'high' || (typeof data.etymology.confidence === 'number' && data.etymology.confidence >= 0.8)
