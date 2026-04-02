@@ -55,12 +55,18 @@ Question: {question}"""
         system_instruction=system_prompt,
     )
 
-    # Generate response
+    import time
+    print(f"[llm] calling {model_name} with {len(context_chunks)} chunks", flush=True)
+    t0 = time.time()
+
+    # Generate response (45s HTTP timeout so the thread doesn't outlive the server timeout)
     response = model.generate_content(
         user_message,
         generation_config=genai.types.GenerationConfig(
             max_output_tokens=max_tokens,
-        )
+        ),
+        request_options={"timeout": 45},
     )
+    print(f"[llm] response received in {time.time() - t0:.1f}s", flush=True)
 
     return response.text
