@@ -154,9 +154,38 @@ async def get_word_detail(word: str):
         "total_count": sum(p["count"] for p in freq_data)
     }
 
+@app.get("/api/test-llm")
+async def test_llm():
+    """Diagnostic: ping Gemini with a minimal prompt to check API key + model."""
+    import asyncio
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GOOGLE_API_KEY not set")
+
+    import google.generativeai as genai
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(model_name=LLM_MODEL)
+
+    loop = asyncio.get_running_loop()
+    try:
+        response = await asyncio.wait_for(
+            loop.run_in_executor(None, lambda: model.generate_content("Say 'ok'")),
+            timeout=30.0,
+        )
+        return {"status": "ok", "model": LLM_MODEL, "response": response.text}
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=500, detail=f"Gemini timed out (model={LLM_MODEL})")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gemini error: {str(e)}")
+
+
 @app.post("/api/query", response_model=QueryResponse)
 async def post_query(request: QueryRequest):
     import asyncio
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GOOGLE_API_KEY is not configured on the server")
+
     collection = get_collection(DB_DIR, COLLECTION_NAME)
     hits = query_similar(collection, request.question, n_results=CONTEXT_CHUNKS)
 
@@ -175,7 +204,7 @@ async def post_query(request: QueryRequest):
                     max_tokens=LLM_MAX_TOKENS,
                 )
             ),
-            timeout=60.0,
+            timeout=50.0,
         )
     except asyncio.TimeoutError:
         return QueryResponse(answer="The query timed out. Try a more specific question.", citations=hits)
