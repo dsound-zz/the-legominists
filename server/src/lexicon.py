@@ -6,7 +6,7 @@ import os
 import json
 import time
 from typing import List, Dict
-from google import genai
+import google.generativeai as genai
 from pathlib import Path
 
 # Add project root to path if needed for imports
@@ -21,7 +21,8 @@ def extract_neologisms_from_batch(chunks: List[Dict], model_name: str = LLM_MODE
     """
     Send a batch of chunks to Gemini to extract invented words.
     """
-    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
+    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+    model = genai.GenerativeModel(model_name)
     
     # Format the batch text with page headers
     context_text = ""
@@ -48,7 +49,7 @@ def extract_neologisms_from_batch(chunks: List[Dict], model_name: str = LLM_MODE
     """
     
     try:
-        response = client.models.generate_content(model=model_name, contents=prompt)
+        response = model.generate_content(prompt)
         text = response.text.strip()
         
         # Clean markdown if present

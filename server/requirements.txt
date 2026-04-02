@@ -1,7 +1,7 @@
 # Dependencies for the Legominist FastAPI server
 pymupdf==1.25.3
 chromadb==1.5.5
-google-genai>=1.0.0
+google-generativeai==0.8.4
 python-dotenv==1.1.0
 rich==14.0.0
 fastapi==0.115.0

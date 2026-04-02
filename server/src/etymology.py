@@ -5,8 +5,7 @@ Etymology: Analyzes the roots of Gurdjieff's neologisms.
 import os
 import json
 from typing import List, Dict
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from pathlib import Path
 
 # Add project root to path
@@ -50,7 +49,8 @@ def analyze_etymology_batch(words: List[str], model_name: str = LLM_MODEL) -> Li
     if not words:
         return []
         
-    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
+    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+    model = genai.GenerativeModel(model_name)
 
     words_list = "\n".join([f"- {w}" for w in words])
 
@@ -80,7 +80,7 @@ def analyze_etymology_batch(words: List[str], model_name: str = LLM_MODEL) -> Li
     """
 
     try:
-        response = client.models.generate_content(model=model_name, contents=prompt)
+        response = model.generate_content(prompt)
         text = _clean_json_response(response.text)
         data = json.loads(text)
         return data if isinstance(data, list) else []
