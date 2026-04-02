@@ -23,6 +23,7 @@ const QueryInterface: React.FC = () => {
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const reqRef = useRef(0);
 
   useEffect(() => {
     if (location.state?.initialQuestion) {
@@ -31,34 +32,35 @@ const QueryInterface: React.FC = () => {
     }
   }, [location.state]);
 
+  // Cancel on unmount
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
+
   const cancel = () => {
-    if (abortRef.current) {
-      abortRef.current.abort();
-      abortRef.current = null;
-    }
+    reqRef.current++;
+    abortRef.current?.abort();
+    abortRef.current = null;
     setLoading(false);
+    setError(null);
   };
 
   const handleQuery = async (q: string = question) => {
     if (!q.trim()) return;
-    cancel();
+    const id = ++reqRef.current;
+    abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post('/api/query', { question: q }, {
-        signal: controller.signal,
-        timeout: 90000,
-      });
-      setResponse(res.data);
+      const res = await api.post('/api/query', { question: q }, { signal: controller.signal });
+      if (id === reqRef.current) setResponse(res.data);
     } catch (err: any) {
-      if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
+      if (id === reqRef.current && !controller.signal.aborted) {
         console.error('Query failed:', err);
         setError('The query timed out or failed. Try a shorter question.');
       }
     } finally {
-      setLoading(false);
+      if (id === reqRef.current) setLoading(false);
     }
   };
 
