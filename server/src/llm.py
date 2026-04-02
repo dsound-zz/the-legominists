@@ -48,7 +48,10 @@ Question: {question}"""
 
     response = model.generate_content(
         user_message,
-        generation_config=genai.types.GenerationConfig(max_output_tokens=max_tokens),
+        generation_config=genai.types.GenerationConfig(
+            max_output_tokens=max_tokens,
+            thinking_config={"thinking_budget": 0},
+        ),
     )
 
     print(f"[llm] response received in {time.time() - t0:.1f}s", flush=True)
